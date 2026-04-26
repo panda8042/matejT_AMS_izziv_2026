@@ -244,3 +244,5 @@ outputs/
 test.py
 external/U-Mamba/
 external/U-Mamba/
+nnUNet_preprocessed/
+nnUNet_results/
