@@ -1,4 +1,47 @@
-# matejT_AMS_izziv_2026
+# AMS izziv 2026 - U-Mamba za segmentacijo koronarnih arterij
+
+Avtor: Matej Turk  
+Metoda: U-Mamba  
+Dataset: ImageCAS  
+Naloga: avtomatska segmentacija koronarnih arterij na 3D CTA slikah
+
+## Opis
+
+Projekt pripravlja metodo U-Mamba za segmentacijo koronarnih arterij na podatkovni zbirki ImageCAS.
+
+Repozitorij vsebuje:
+
+- Docker okolje s CUDA, PyTorch in U-Mamba odvisnostmi,
+- skripte za pretvorbo ImageCAS podatkov v nnU-Net format,
+- osnovne CLI skripte za trening, testiranje in inferenco,
+- mini dataset workflow za varno preverjanje delovanja pipeline-a na 10 slikah.
+
+Končni trening celotnega modela je predviden na zmogljivejšem računalniku z dovolj prostora in GPU pomnilnika. Na laboratorijskem računalniku se uporablja mini testni pipeline.
+
+## Struktura projekta
+
+```text
+matejT_AMS_izziv_2026/
+├── Dockerfile
+├── README.md
+├── run_train.py
+├── run_test.py
+├── run_inference.py
+├── configs/
+│   └── params.json
+├── scripts/
+│   ├── convert_imagecas_to_nnunet.py
+│   └── convert_imagecas_mini_to_nnunet.py
+├── src/
+├── outputs/
+├── nnUNet_raw/
+├── nnUNet_preprocessed/
+└── nnUNet_results/
+```
+
+
+
+## Osebne beležke
 
 git add README.md
 git commit -m "first commit"
