@@ -43,6 +43,21 @@ RUN pip install "causal-conv1d==1.2.0.post2" --no-build-isolation
 RUN pip install "mamba-ssm==1.2.0.post1" --no-build-isolation
 RUN pip install "transformers==4.39.3"
 
+# Install U-Mamba from a fixed commit for reproducibility
+RUN git clone https://github.com/bowang-lab/U-Mamba.git /opt/U-Mamba && \
+    cd /opt/U-Mamba && \
+    git checkout 28459e33ca03769800dd35e23c6e62491d1925b5
+
+# Patch U-Mamba paths.py so it respects Docker environment variables
+RUN python3 -c "from pathlib import Path; p=Path('/opt/U-Mamba/umamba/nnunetv2/paths.py'); t=p.read_text(); t=t.replace(\"nnUNet_raw = join(base, 'nnUNet_raw') # os.environ.get('nnUNet_raw')\", \"nnUNet_raw = os.environ.get('nnUNet_raw', join(base, 'nnUNet_raw'))\"); t=t.replace(\"nnUNet_preprocessed = join(base, 'nnUNet_preprocessed') # os.environ.get('nnUNet_preprocessed')\", \"nnUNet_preprocessed = os.environ.get('nnUNet_preprocessed', join(base, 'nnUNet_preprocessed'))\"); t=t.replace(\"nnUNet_results = join(base, 'nnUNet_results') # os.environ.get('nnUNet_results')\", \"nnUNet_results = os.environ.get('nnUNet_results', join(base, 'nnUNet_results'))\"); p.write_text(t)"
+
+RUN pip install -e /opt/U-Mamba/umamba
+
+# nnU-Net / U-Mamba paths inside the project directory
+ENV nnUNet_raw=/workdir/nnUNet_raw
+ENV nnUNet_preprocessed=/workdir/nnUNet_preprocessed
+ENV nnUNet_results=/workdir/nnUNet_results
+
 WORKDIR /workdir
 
 CMD ["/bin/bash"]
