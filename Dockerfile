@@ -38,6 +38,11 @@ RUN pip install \
     packaging \
     connected-components-3d
 
+# U-Mamba / Mamba dependencies
+RUN pip install "causal-conv1d==1.2.0.post2" --no-build-isolation
+RUN pip install "mamba-ssm==1.2.0.post1" --no-build-isolation
+RUN pip install "transformers==4.39.3"
+
 WORKDIR /workdir
 
 CMD ["/bin/bash"]
