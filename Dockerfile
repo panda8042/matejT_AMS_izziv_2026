@@ -1,18 +1,43 @@
-# Uporabimo uradno Pytorch sliko
-FROM pytorch/pytorch:2.0.1-cuda11.8-cudnn8-runtime
-#FROM pytorch/pytorch:1.7.1-cuda11.-cudnn8-devel
+FROM nvidia/cuda:11.8.0-cudnn8-devel-ubuntu22.04
 
-# Install
-RUN pip install numpy
-RUN pip install nibabel
-RUN pip install timm==0.5.4
-RUN pip install scipy
-RUN pip install torch
-#RUN pip install SimpleITK
-
-#COPY source source
+ENV DEBIAN_FRONTEND=noninteractive
+ENV PYTHONUNBUFFERED=1
 
 WORKDIR /workdir
 
+RUN apt-get update && apt-get install -y \
+    python3 \
+    python3-pip \
+    python3-dev \
+    git \
+    wget \
+    curl \
+    build-essential \
+    ninja-build \
+    && rm -rf /var/lib/apt/lists/*
 
-#CMD ["python", "Code/Test_C2FViT_pairwise.py", "--modelpath", "Model/C2FViT_affine_COM_pairwise_stagelvl3_118000.pth", "--fixed", "Data/image_B.nii.gz", "--moving", "Data/image_A.nii.gz"]
+RUN ln -sf /usr/bin/python3 /usr/bin/python
+
+RUN python3 -m pip install --upgrade pip setuptools wheel
+
+RUN pip install torch==2.0.1 torchvision==0.15.2 torchaudio==2.0.2 \
+    --index-url https://download.pytorch.org/whl/cu118
+
+RUN pip install \
+    numpy \
+    scipy \
+    pandas \
+    matplotlib \
+    scikit-image \
+    scikit-learn \
+    nibabel \
+    SimpleITK \
+    tqdm \
+    einops \
+    timm==0.5.4 \
+    packaging \
+    connected-components-3d
+
+WORKDIR /workdir
+
+CMD ["/bin/bash"]
