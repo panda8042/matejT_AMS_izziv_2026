@@ -239,3 +239,6 @@ poetry.toml
 pyrightconfig.json
 
 # End of https://www.toptal.com/developers/gitignore/api/python,imagestest.py
+nnUNet_raw/
+outputs/
+test.py

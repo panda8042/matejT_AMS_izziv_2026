@@ -14,5 +14,5 @@ docker build -t matejt_ams_izziv .
 docker ps -> preveri aktivne
 docker image ls
 
-docker run --gpus device=0 -it --rm -v "PWD":/workdir -v /media/FastDataMama/data:/data matejt_ams_izziv python3 test.py
+docker run --gpus device=0 -it --rm -v "$PWD":/workdir -v /media/FastDataMama/izziv/data:/data matejt_ams_izziv python3 test.py
 
