@@ -242,3 +242,5 @@ pyrightconfig.json
 nnUNet_raw/
 outputs/
 test.py
+external/U-Mamba/
+external/U-Mamba/
