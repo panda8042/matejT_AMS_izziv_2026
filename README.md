@@ -62,6 +62,22 @@ docker run --gpus device=0 -it --rm -v "$PWD":/workdir -v /media/FastDataMama/iz
 
 ## Smoke test status
 
+Na laboratorijskem računalniku je bil uspešno izveden mini end-to-end test za U-Mamba pipeline:
+
+- Dataset503_ImageCASMini50: 50 train slik + 10 test slik,
+- nnU-Net 3d_fullres preprocessing uspešno izveden,
+- U-Mamba trainer se uspešno zažene,
+- zaradi omejitve VRAM na RTX 2080 Ti je bil za smoke test uporabljen zmanjšan plan:
+  - batch_size = 1,
+  - patch_size = [48, 96, 96],
+- 1 epoch trening se uspešno zaključi,
+- ustvarjena sta checkpoint_final.pth in checkpoint_best.pth,
+- validation prediction .nii.gz datoteke se ustvarijo.
+
+Opomba: po 1 epochu so validation predikcije še prazne oziroma vsebujejo samo background, zato ta test potrjuje delovanje pipeline-a, ne pa kakovosti končnega modela. Za uporaben model je potreben daljši trening na večjem GPU oziroma z ustrezno izbranim planom.
+
+## Smoke test status
+
 Na laboratorijskem računalniku je bil uspešno izveden mini end-to-end test za U-Mamba pipeline.
 
 Uporabljen je bil mini dataset:
@@ -87,3 +103,4 @@ Na RTX 2080 Ti originalni 3d_fullres plan ni šel skozi zaradi omejitve VRAM. Za
 - patch_size = [48, 96, 96].
 
 Opomba: po 1 epochu so validation predikcije še prazne oziroma vsebujejo samo background. Ta test zato potrjuje funkcionalnost pipeline-a, ne pa kakovosti končnega modela. Za uporaben model je potreben daljši trening na večjem GPU oziroma z ustrezno izbranim planom.
+
