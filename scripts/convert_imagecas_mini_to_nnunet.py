@@ -154,7 +154,7 @@ def load_split_from_xlsx(split_file: Path, split_name: str, sheet_name: str = "v
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Convert ImageCAS dataset to nnU-Net raw format using symbolic links."
+        description="Convert a small ImageCAS subset to nnU-Net raw format using symbolic links."
     )
     parser.add_argument(
         "--input_path",
@@ -164,7 +164,7 @@ def main():
     parser.add_argument(
         "--output_path",
         required=True,
-        help="Output path for nnU-Net raw dataset, e.g. nnUNet_raw/Dataset501_ImageCAS.",
+        help="Output path for nnU-Net raw dataset, e.g. nnUNet_raw/Dataset502_ImageCASMini.",
     )
     parser.add_argument(
         "--split_file",
@@ -189,6 +189,23 @@ def main():
         help="Fallback test fraction if no split_file is provided.",
     )
     parser.add_argument(
+        "--num_train",
+        type=int,
+        default=10,
+        help="Number of training cases for the mini dataset.",
+    )
+    parser.add_argument(
+        "--num_test",
+        type=int,
+        default=2,
+        help="Number of test cases for the mini dataset.",
+    )
+    parser.add_argument(
+        "--dataset_name",
+        default="ImageCASMini",
+        help="Dataset name written to dataset.json.",
+    )
+    parser.add_argument(
         "--overwrite",
         action="store_true",
         help="Overwrite existing symlinks.",
@@ -201,6 +218,12 @@ def main():
 
     if not input_path.exists():
         raise FileNotFoundError(f"Input path does not exist: {input_path}")
+
+    if args.num_train <= 0:
+        raise ValueError("--num_train must be > 0")
+
+    if args.num_test < 0:
+        raise ValueError("--num_test must be >= 0")
 
     images_tr = output_path / "imagesTr"
     labels_tr = output_path / "labelsTr"
@@ -244,9 +267,15 @@ def main():
         train_ids = case_ids[:n_train]
         test_ids = case_ids[n_train:]
 
+    if len(train_ids) < args.num_train:
+        raise RuntimeError(f"Requested {args.num_train} training cases, but only {len(train_ids)} are available.")
+
+    if len(test_ids) < args.num_test:
+        raise RuntimeError(f"Requested {args.num_test} test cases, but only {len(test_ids)} are available.")
+
     # Mini debug subset: use only a few cases for fast pipeline testing
-    train_ids = train_ids[:10]
-    test_ids = test_ids[:2]
+    train_ids = train_ids[:args.num_train]
+    test_ids = test_ids[:args.num_test]
 
     print(f"Total available cases: {len(case_ids)}")
     print(f"Train cases: {len(train_ids)}")
@@ -284,8 +313,11 @@ def main():
         },
         "numTraining": len(train_ids),
         "file_ending": ".nii.gz",
-        "name": "ImageCASMini",
-        "description": f"ImageCAS coronary artery segmentation dataset converted to nnU-Net format using {args.split}."
+        "name": args.dataset_name,
+        "description": (
+            f"Mini ImageCAS coronary artery segmentation dataset converted to nnU-Net format "
+            f"using {args.split}. Contains {len(train_ids)} training cases and {len(test_ids)} test cases."
+        )
     }
 
     with open(output_path / "dataset.json", "w") as f:
