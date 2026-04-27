@@ -24,7 +24,7 @@ RUN pip install torch==2.0.1 torchvision==0.15.2 torchaudio==2.0.2 \
     --index-url https://download.pytorch.org/whl/cu118
 
 RUN pip install \
-    numpy \
+    numpy==1.26.4 \
     scipy \
     pandas \
     matplotlib \
@@ -52,6 +52,9 @@ RUN git clone https://github.com/bowang-lab/U-Mamba.git /opt/U-Mamba && \
 RUN python3 -c "from pathlib import Path; p=Path('/opt/U-Mamba/umamba/nnunetv2/paths.py'); t=p.read_text(); t=t.replace(\"nnUNet_raw = join(base, 'nnUNet_raw') # os.environ.get('nnUNet_raw')\", \"nnUNet_raw = os.environ.get('nnUNet_raw', join(base, 'nnUNet_raw'))\"); t=t.replace(\"nnUNet_preprocessed = join(base, 'nnUNet_preprocessed') # os.environ.get('nnUNet_preprocessed')\", \"nnUNet_preprocessed = os.environ.get('nnUNet_preprocessed', join(base, 'nnUNet_preprocessed'))\"); t=t.replace(\"nnUNet_results = join(base, 'nnUNet_results') # os.environ.get('nnUNet_results')\", \"nnUNet_results = os.environ.get('nnUNet_results', join(base, 'nnUNet_results'))\"); p.write_text(t)"
 
 RUN pip install -e /opt/U-Mamba/umamba
+
+# Force NumPy 1.x because PyTorch 2.0.1 / compiled extensions are not compatible with NumPy 2.x
+RUN pip install "numpy==1.26.4"
 
 # nnU-Net / U-Mamba paths inside the project directory
 ENV nnUNet_raw=/workdir/nnUNet_raw
