@@ -59,3 +59,31 @@ docker image ls
 
 docker run --gpus device=0 -it --rm -v "$PWD":/workdir -v /media/FastDataMama/izziv/data:/data matejt_ams_izziv python3 test.py
 
+
+## Smoke test status
+
+Na laboratorijskem računalniku je bil uspešno izveden mini end-to-end test za U-Mamba pipeline.
+
+Uporabljen je bil mini dataset:
+
+- Dataset503_ImageCASMini50,
+- 50 učnih primerov,
+- 10 testnih primerov,
+- uradni Split-1 iz ImageCAS split datoteke.
+
+Uspešno izvedeni koraki:
+
+- pretvorba ImageCAS podatkov v nnU-Net format,
+- nnU-Net 3d_fullres preprocessing,
+- zagon U-Mamba trainerja,
+- 1 epoch trening na GPU,
+- zapis checkpoint_final.pth in checkpoint_best.pth,
+- generiranje validation prediction .nii.gz datotek,
+- pregled CTA slike in ground-truth maske v 3D Slicerju.
+
+Na RTX 2080 Ti originalni 3d_fullres plan ni šel skozi zaradi omejitve VRAM. Za smoke test je bil zato uporabljen zmanjšan plan:
+
+- batch_size = 1,
+- patch_size = [48, 96, 96].
+
+Opomba: po 1 epochu so validation predikcije še prazne oziroma vsebujejo samo background. Ta test zato potrjuje funkcionalnost pipeline-a, ne pa kakovosti končnega modela. Za uporaben model je potreben daljši trening na večjem GPU oziroma z ustrezno izbranim planom.
