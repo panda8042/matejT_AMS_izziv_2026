@@ -104,3 +104,14 @@ Na RTX 2080 Ti originalni 3d_fullres plan ni šel skozi zaradi omejitve VRAM. Za
 
 Opomba: po 1 epochu so validation predikcije še prazne oziroma vsebujejo samo background. Ta test zato potrjuje funkcionalnost pipeline-a, ne pa kakovosti končnega modela. Za uporaben model je potreben daljši trening na večjem GPU oziroma z ustrezno izbranim planom.
 
+## Test 
+Dataset504_ImageCASPreprocessed150:
+- source: existing preprocessed Dataset001_ImageCAS subset
+- split: 140 train / 10 validation, validation IDs 141–150
+- model: U-Mamba Enc 3D
+- configuration: 3d_fullres
+- patch size: [64, 128, 128]
+- batch size: 1
+- epochs: 20
+- result: Mean Validation Dice = 0.4506
+- validation predictions: 10/10 generated, all non-empty
