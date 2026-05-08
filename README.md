@@ -115,3 +115,52 @@ Dataset504_ImageCASPreprocessed150:
 - epochs: 20
 - result: Mean Validation Dice = 0.4506
 - validation predictions: 10/10 generated, all non-empty
+
+## Dataset504 U-Mamba 20 epoch result
+
+Na laboratorijskem računalniku je bil izveden U-Mamba trening na lokalnem Dataset504 subsetu, ki uporablja obstoječe predprocesirane ImageCAS podatke.
+
+Uporabljena konfiguracija:
+
+- dataset: Dataset504_ImageCASPreprocessed150
+- split: 140 training / 10 validation
+- validation primeri: 141–150
+- model: U-Mamba Enc 3D
+- konfiguracija: 3d_fullres
+- patch size: [64, 128, 128]
+- batch size: 1
+- število epochov: 20
+
+Rezultat:
+
+- validation complete
+- Mean Validation Dice: 0.4506
+- ustvarjenih 10/10 validacijskih predikcij
+- vse validacijske predikcije so neprazne
+- velikost rezultatov: približno 1.3 GB
+
+Ta rezultat kaže, da U-Mamba pipeline ne deluje več samo kot smoke test, ampak se model dejansko uči na ImageCAS podatkih.
+
+
+## Dataset505 U-Mamba 200 epoch result
+
+Izveden je bil daljši U-Mamba trening na večjem ImageCAS subsetu.
+
+Uporabljena konfiguracija:
+
+- dataset: Dataset505_ImageCASPreprocessed700
+- split: 650 training / 50 validation
+- validation primeri: 651–700
+- model: U-Mamba Enc 3D
+- konfiguracija: 3d_fullres
+- patch size: [64, 128, 128]
+- batch size: 1
+- število epochov: 200
+
+Rezultat:
+
+- validation complete
+- Mean Validation Dice: 0.6412
+- ustvarjenih 50/50 validacijskih predikcij
+
+V primerjavi s prejšnjim 20-epoch baseline testom na Dataset504 se je Mean Validation Dice izboljšal iz 0.4506 na 0.6412.
