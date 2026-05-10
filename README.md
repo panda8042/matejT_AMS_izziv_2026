@@ -164,3 +164,41 @@ Rezultat:
 - ustvarjenih 50/50 validacijskih predikcij
 
 V primerjavi s prejšnjim 20-epoch baseline testom na Dataset504 se je Mean Validation Dice izboljšal iz 0.4506 na 0.6412.
+
+
+
+
+## Dataset506 U-Mamba 800 epoch patch80 result
+
+Izveden je bil dodaten U-Mamba trening na istem 650/50 splitu kot Dataset505, vendar z večjim patch size in daljšim učenjem.
+
+Konfiguracija:
+
+- dataset: Dataset506_ImageCASPreprocessed700Patch80
+- split: 650 training / 50 validation
+- validation primeri: 651–700
+- model: U-Mamba Enc 3D
+- konfiguracija: 3d_fullres
+- patch size: [80, 128, 128]
+- batch size: 1
+- število epochov: 800
+
+Rezultat:
+
+- Mean Validation Dice: 0.6536
+
+V primerjavi z Dataset505 U-Mamba treningom se je rezultat izboljšal iz 0.6412 na 0.6536. Večji patch in daljši trening sta torej prinesla manjše, vendar merljivo izboljšanje.
+
+PRIMERJAVA
+Dataset505 patch64, 200 ep:
+Mean Dice: 0.6412
+Std Dice:  0.0728
+Min Dice:  0.4310
+Max Dice:  0.7810
+
+Dataset506 patch80, 800 ep:
+Mean Dice: 0.6536
+Std Dice:  0.0779
+Min Dice:  0.3918
+Max Dice:  0.7856
+
