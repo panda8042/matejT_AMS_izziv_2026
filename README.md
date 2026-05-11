@@ -266,3 +266,64 @@ Primerjava glavnih eksperimentov:
 Na istem Dataset506 splitu, z enakim patch size, batch size in številom epochov, je osnovni nnU-Net dosegel višji Mean Validation Dice kot U-Mamba Enc. nnU-Net baseline je bil tudi stabilnejši, saj je imel nižji standardni odklon in višji najslabši Dice primer. V trenutni konfiguraciji U-Mamba torej ni izboljšala segmentacije glede na nnU-Net baseline.
 
 Analiza FP/FN kaže, da oba modela še vedno oversegmentirata, vendar nnU-Net praviloma ustvari manj false-positive voxlov in doseže boljše ujemanje z ročnimi maskami.
+
+## Reproduciranje glavnih rezultatov
+
+Ta repozitorij vsebuje Docker okolje, skripte in dokumentirane ukaze za reprodukcijo glavnih rezultatov na ImageCAS podatkih. Glavna primerjava je bila narejena med U-Mamba Enc 3D in osnovnim nnU-Net baseline modelom na istem train/validation splitu.
+
+### 1. Docker build
+
+Docker image se zgradi z:
+
+```bash
+docker build -t matejt_ams_izziv .
+/media/FastDataMama/new_nnunet/nnUNet/nnunet/nnUNet_preprocessed/Dataset001_ImageCAS
+/media/FastDataMama/MatejT/AMS_izziv_2026
+docker run --gpus device=1 --shm-size=16g --rm \
+  -v "$PWD":/workdir \
+  -v /media/FastDataMama/new_nnunet:/media/FastDataMama/new_nnunet:ro \
+  matejt_ams_izziv bash -lc "cat > /opt/U-Mamba/umamba/nnunetv2/training/nnUNetTrainer/nnUNetTrainerUMambaEnc_more.py << 'PYEOF'
+import torch
+from nnunetv2.training.nnUNetTrainer.nnUNetTrainerUMambaEnc import nnUNetTrainerUMambaEnc
+
+class nnUNetTrainerUMambaEnc_800epochs(nnUNetTrainerUMambaEnc):
+    def __init__(self, plans: dict, configuration: str, fold: int, dataset_json: dict, unpack_dataset: bool = True, device: torch.device = torch.device('cuda')):
+        super().__init__(plans, configuration, fold, dataset_json, unpack_dataset, device)
+        self.num_epochs = 800
+PYEOF
+
+cd /workdir && nnUNetv2_train 506 3d_fullres 0 -tr nnUNetTrainerUMambaEnc_800epochs"
+docker run --gpus device=1 --shm-size=16g --rm \
+  -v "$PWD":/workdir \
+  -v /media/FastDataMama/new_nnunet:/media/FastDataMama/new_nnunet:ro \
+  matejt_ams_izziv bash -lc "cat > /opt/U-Mamba/umamba/nnunetv2/training/nnUNetTrainer/nnUNetTrainer_baseline_more.py << 'PYEOF'
+import torch
+from nnunetv2.training.nnUNetTrainer.nnUNetTrainer import nnUNetTrainer
+
+class nnUNetTrainer_800epochs(nnUNetTrainer):
+    def __init__(self, plans: dict, configuration: str, fold: int, dataset_json: dict, unpack_dataset: bool = True, device: torch.device = torch.device('cuda')):
+        super().__init__(plans, configuration, fold, dataset_json, unpack_dataset, device)
+        self.num_epochs = 800
+PYEOF
+
+cd /workdir && nnUNetv2_train 506 3d_fullres 0 -tr nnUNetTrainer_800epochs"
+docker run --rm \
+  -v "$PWD":/workdir \
+  -v /media/FastDataMama/new_nnunet:/media/FastDataMama/new_nnunet:ro \
+  matejt_ams_izziv bash -lc "cd /workdir && python3 scripts/evaluate_predictions.py \
+    --pred-dir nnUNet_results/Dataset506_ImageCASPreprocessed700Patch80/nnUNetTrainerUMambaEnc_800epochs__nnUNetPlans__3d_fullres/fold_0/validation \
+    --gt-dir nnUNet_preprocessed/Dataset506_ImageCASPreprocessed700Patch80/gt_segmentations \
+    --out-csv outputs/evaluation/umamba506_800ep_per_case.csv \
+    --out-json outputs/evaluation/umamba506_800ep_summary.json"
+docker run --rm \
+  -v "$PWD":/workdir \
+  -v /media/FastDataMama/new_nnunet:/media/FastDataMama/new_nnunet:ro \
+  matejt_ams_izziv bash -lc "cd /workdir && python3 scripts/evaluate_predictions.py \
+    --pred-dir nnUNet_results/Dataset506_ImageCASPreprocessed700Patch80/nnUNetTrainer_800epochs__nnUNetPlans__3d_fullres/fold_0/validation \
+    --gt-dir nnUNet_preprocessed/Dataset506_ImageCASPreprocessed700Patch80/gt_segmentations \
+    --out-csv outputs/evaluation/nnunet506_800ep_per_case.csv \
+    --out-json outputs/evaluation/nnunet506_800ep_summary.json"
+results/evaluation/umamba506_800ep_per_case.csv
+results/evaluation/umamba506_800ep_summary.json
+results/evaluation/nnunet506_800ep_per_case.csv
+results/evaluation/nnunet506_800ep_summary.json
