@@ -1,0 +1,11 @@
+{
+    "pred_dir": "nnUNet_results/Dataset506_ImageCASPreprocessed700Patch80/nnUNetTrainer_800epochs__nnUNetPlans__3d_fullres/fold_0/validation",
+    "gt_dir": "nnUNet_preprocessed/Dataset506_ImageCASPreprocessed700Patch80/gt_segmentations",
+    "n": 50,
+    "mean_dice": 0.7402432907662113,
+    "std_dice": 0.06463883543407627,
+    "min_dice": 0.578905230962983,
+    "max_dice": 0.8477907968291065,
+    "best_case": "698",
+    "worst_case": "655"
+}
