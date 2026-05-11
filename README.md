@@ -202,3 +202,32 @@ Std Dice:  0.0779
 Min Dice:  0.3918
 Max Dice:  0.7856
 
+
+## Dataset506 nnU-Net baseline 800 epoch patch80 result
+
+Izveden je bil še osnovni nnU-Net baseline na istem splitu kot Dataset506 U-Mamba eksperiment.
+
+Uporabljena konfiguracija:
+
+- dataset: Dataset506_ImageCASPreprocessed700Patch80
+- split: 650 training / 50 validation
+- validation primeri: 651–700
+- model: nnU-Net baseline
+- konfiguracija: 3d_fullres
+- patch size: [80, 128, 128]
+- batch size: 1
+- število epochov: 800
+
+Rezultat:
+
+- Mean Validation Dice: 0.7404
+
+Primerjava glavnih rezultatov:
+
+| Eksperiment | Model | Patch size | Epochs | Train/val | Mean Dice |
+|---|---|---:|---:|---:|---:|
+| Dataset505 | U-Mamba Enc 3D | [64, 128, 128] | 200 | 650/50 | 0.6412 |
+| Dataset506 | U-Mamba Enc 3D | [80, 128, 128] | 800 | 650/50 | 0.6536 |
+| Dataset506 | nnU-Net baseline | [80, 128, 128] | 800 | 650/50 | 0.7404 |
+
+Na istem Dataset506 splitu in z enako patch/epoch konfiguracijo je osnovni nnU-Net dosegel višji Mean Validation Dice kot U-Mamba Enc. To kaže, da v trenutni konfiguraciji U-Mamba ni izboljšala segmentacije glede na nnU-Net baseline.
