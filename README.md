@@ -231,3 +231,38 @@ Primerjava glavnih rezultatov:
 | Dataset506 | nnU-Net baseline | [80, 128, 128] | 800 | 650/50 | 0.7404 |
 
 Na istem Dataset506 splitu in z enako patch/epoch konfiguracijo je osnovni nnU-Net dosegel višji Mean Validation Dice kot U-Mamba Enc. To kaže, da v trenutni konfiguraciji U-Mamba ni izboljšala segmentacije glede na nnU-Net baseline.
+
+## Dataset506 nnU-Net baseline 800 epoch patch80 result
+
+Izveden je bil osnovni nnU-Net baseline na istem splitu kot Dataset506 U-Mamba eksperiment.
+
+Uporabljena konfiguracija:
+
+- dataset: Dataset506_ImageCASPreprocessed700Patch80
+- split: 650 training / 50 validation
+- validation primeri: 651–700
+- model: nnU-Net baseline
+- konfiguracija: 3d_fullres
+- patch size: [80, 128, 128]
+- batch size: 1
+- število epochov: 800
+
+Rezultat na 50 validacijskih primerih:
+
+- Mean Dice: 0.7402
+- Std Dice: 0.0646
+- Min Dice: 0.5789
+- Max Dice: 0.8478
+- N: 50
+
+Primerjava glavnih eksperimentov:
+
+| Eksperiment | Model | Patch size | Epochs | Train/val | Mean Dice | Std Dice | Min Dice | Max Dice |
+|---|---|---:|---:|---:|---:|---:|---:|---:|
+| Dataset505 | U-Mamba Enc 3D | [64, 128, 128] | 200 | 650/50 | 0.6412 | 0.0728 | 0.4310 | 0.7810 |
+| Dataset506 | U-Mamba Enc 3D | [80, 128, 128] | 800 | 650/50 | 0.6536 | 0.0779 | 0.3918 | 0.7856 |
+| Dataset506 | nnU-Net baseline | [80, 128, 128] | 800 | 650/50 | 0.7402 | 0.0646 | 0.5789 | 0.8478 |
+
+Na istem Dataset506 splitu, z enakim patch size, batch size in številom epochov, je osnovni nnU-Net dosegel višji Mean Validation Dice kot U-Mamba Enc. nnU-Net baseline je bil tudi stabilnejši, saj je imel nižji standardni odklon in višji najslabši Dice primer. V trenutni konfiguraciji U-Mamba torej ni izboljšala segmentacije glede na nnU-Net baseline.
+
+Analiza FP/FN kaže, da oba modela še vedno oversegmentirata, vendar nnU-Net praviloma ustvari manj false-positive voxlov in doseže boljše ujemanje z ročnimi maskami.
