@@ -267,71 +267,39 @@ Na istem Dataset506 splitu, z enakim patch size, batch size in številom epochov
 
 Analiza FP/FN kaže, da oba modela še vedno oversegmentirata, vendar nnU-Net praviloma ustvari manj false-positive voxlov in doseže boljše ujemanje z ročnimi maskami.
 
+
 ## Reproduciranje glavnih rezultatov
 
-Ta repozitorij vsebuje Docker okolje, skripte in dokumentirane ukaze za reprodukcijo glavnih rezultatov na ImageCAS podatkih. Glavna primerjava je bila narejena med U-Mamba Enc 3D in osnovnim nnU-Net baseline modelom na istem train/validation splitu.
+Glavna primerjava je bila narejena med U-Mamba Enc 3D in osnovnim nnU-Net baseline modelom na istem ImageCAS splitu.
 
-### 1. Docker build
+Uporabljeni podatki:
 
-Docker image se zgradi z:
+- Dataset506_ImageCASPreprocessed700Patch80
+- train primeri: 1-650
+- validation primeri: 651-700
+- patch size: [80, 128, 128]
+- batch size: 1
+- epochs: 800
+- konfiguracija: 3d_fullres
 
-```bash
-docker build -t matejt_ams_izziv .
-/media/FastDataMama/new_nnunet/nnUNet/nnunet/nnUNet_preprocessed/Dataset001_ImageCAS
-/media/FastDataMama/MatejT/AMS_izziv_2026
-docker run --gpus device=1 --shm-size=16g --rm \
-  -v "$PWD":/workdir \
-  -v /media/FastDataMama/new_nnunet:/media/FastDataMama/new_nnunet:ro \
-  matejt_ams_izziv bash -lc "cat > /opt/U-Mamba/umamba/nnunetv2/training/nnUNetTrainer/nnUNetTrainerUMambaEnc_more.py << 'PYEOF'
-import torch
-from nnunetv2.training.nnUNetTrainer.nnUNetTrainerUMambaEnc import nnUNetTrainerUMambaEnc
+Glavni rezultati:
 
-class nnUNetTrainerUMambaEnc_800epochs(nnUNetTrainerUMambaEnc):
-    def __init__(self, plans: dict, configuration: str, fold: int, dataset_json: dict, unpack_dataset: bool = True, device: torch.device = torch.device('cuda')):
-        super().__init__(plans, configuration, fold, dataset_json, unpack_dataset, device)
-        self.num_epochs = 800
-PYEOF
+| Eksperiment | Model | Patch size | Epochs | Train/val | Mean Dice | Std Dice | Min Dice | Max Dice |
+|---|---|---:|---:|---:|---:|---:|---:|---:|
+| Dataset505 | U-Mamba Enc 3D | [64, 128, 128] | 200 | 650/50 | 0.6412 | 0.0728 | 0.4310 | 0.7810 |
+| Dataset506 | U-Mamba Enc 3D | [80, 128, 128] | 800 | 650/50 | 0.6536 | 0.0779 | 0.3918 | 0.7856 |
+| Dataset506 | nnU-Net baseline | [80, 128, 128] | 800 | 650/50 | 0.7402 | 0.0646 | 0.5789 | 0.8478 |
 
-cd /workdir && nnUNetv2_train 506 3d_fullres 0 -tr nnUNetTrainerUMambaEnc_800epochs"
-docker run --gpus device=1 --shm-size=16g --rm \
-  -v "$PWD":/workdir \
-  -v /media/FastDataMama/new_nnunet:/media/FastDataMama/new_nnunet:ro \
-  matejt_ams_izziv bash -lc "cat > /opt/U-Mamba/umamba/nnunetv2/training/nnUNetTrainer/nnUNetTrainer_baseline_more.py << 'PYEOF'
-import torch
-from nnunetv2.training.nnUNetTrainer.nnUNetTrainer import nnUNetTrainer
+Na istem Dataset506 splitu je osnovni nnU-Net baseline dosegel višji Mean Validation Dice kot U-Mamba Enc. nnU-Net baseline je bil tudi stabilnejši, saj je imel nižji standardni odklon in višji najslabši Dice primer.
 
-class nnUNetTrainer_800epochs(nnUNetTrainer):
-    def __init__(self, plans: dict, configuration: str, fold: int, dataset_json: dict, unpack_dataset: bool = True, device: torch.device = torch.device('cuda')):
-        super().__init__(plans, configuration, fold, dataset_json, unpack_dataset, device)
-        self.num_epochs = 800
-PYEOF
+Per-case rezultati so shranjeni v:
 
-cd /workdir && nnUNetv2_train 506 3d_fullres 0 -tr nnUNetTrainer_800epochs"
-docker run --rm \
-  -v "$PWD":/workdir \
-  -v /media/FastDataMama/new_nnunet:/media/FastDataMama/new_nnunet:ro \
-  matejt_ams_izziv bash -lc "cd /workdir && python3 scripts/evaluate_predictions.py \
-    --pred-dir nnUNet_results/Dataset506_ImageCASPreprocessed700Patch80/nnUNetTrainerUMambaEnc_800epochs__nnUNetPlans__3d_fullres/fold_0/validation \
-    --gt-dir nnUNet_preprocessed/Dataset506_ImageCASPreprocessed700Patch80/gt_segmentations \
-    --out-csv outputs/evaluation/umamba506_800ep_per_case.csv \
-    --out-json outputs/evaluation/umamba506_800ep_summary.json"
-docker run --rm \
-  -v "$PWD":/workdir \
-  -v /media/FastDataMama/new_nnunet:/media/FastDataMama/new_nnunet:ro \
-  matejt_ams_izziv bash -lc "cd /workdir && python3 scripts/evaluate_predictions.py \
-    --pred-dir nnUNet_results/Dataset506_ImageCASPreprocessed700Patch80/nnUNetTrainer_800epochs__nnUNetPlans__3d_fullres/fold_0/validation \
-    --gt-dir nnUNet_preprocessed/Dataset506_ImageCASPreprocessed700Patch80/gt_segmentations \
-    --out-csv outputs/evaluation/nnunet506_800ep_per_case.csv \
-    --out-json outputs/evaluation/nnunet506_800ep_summary.json"
-results/evaluation/umamba506_800ep_per_case.csv
-results/evaluation/umamba506_800ep_summary.json
-results/evaluation/nnunet506_800ep_per_case.csv
-results/evaluation/nnunet506_800ep_summary.json
-
+- results/evaluation/umamba506_800ep_per_case.csv
+- results/evaluation/umamba506_800ep_summary.json
+- results/evaluation/nnunet506_800ep_per_case.csv
+- results/evaluation/nnunet506_800ep_summary.json
 
 ## Shranjeni modeli
-
-Po glavnih treningih so shranjeni naslednji checkpointi.
 
 U-Mamba Enc 3D, Dataset506, 800 epochov:
 
@@ -345,18 +313,19 @@ nnU-Net baseline, Dataset506, 800 epochov:
 
 ## Trenutno stanje
 
-Trenutno je narejena glavna Split-1 primerjava med U-Mamba Enc 3D in osnovnim nnU-Net baseline modelom na istem 650/50 train-validation splitu. Oba modela sta bila naučena z enakim patch size [80, 128, 128], batch size 1 in 800 epochi.
+Trenutno je narejena glavna Split-1 primerjava med U-Mamba Enc 3D in osnovnim nnU-Net baseline modelom.
 
 Glavni rezultat:
 
 - U-Mamba Enc 3D: Mean Dice 0.6536
 - nnU-Net baseline: Mean Dice 0.7402
 
-V trenutni konfiguraciji je bil nnU-Net baseline boljši in stabilnejši od U-Mamba modela. Analiza FP/FN kaže, da U-Mamba pogosteje oversegmentira in ustvarja dodatne false-positive komponente.
+V trenutni konfiguraciji je bil nnU-Net baseline boljši in stabilnejši od U-Mamba modela. U-Mamba pogosteje oversegmentira in ustvarja dodatne false-positive komponente.
 
 Naslednji predvideni koraki:
 
-- dodati kvalitativne Slicer prikaze najboljših in najslabših primerov,
-- testirati postprocessing z odstranjevanjem majhnih povezanih komponent,
-- dodati topološko/centerline vrednotenje,
-- razširiti skripte/navodila za učenje in vrednotenje na vseh 4 foldih.
+- kvalitativni Slicer prikazi najboljših in najslabših primerov,
+- postprocessing z odstranjevanjem majhnih povezanih komponent,
+- topološko oziroma centerline vrednotenje,
+- razširitev na vse 4 folde.
+
