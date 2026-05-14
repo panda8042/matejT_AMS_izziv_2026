@@ -327,3 +327,36 @@ results/evaluation/umamba506_800ep_per_case.csv
 results/evaluation/umamba506_800ep_summary.json
 results/evaluation/nnunet506_800ep_per_case.csv
 results/evaluation/nnunet506_800ep_summary.json
+
+
+## Shranjeni modeli
+
+Po glavnih treningih so shranjeni naslednji checkpointi.
+
+U-Mamba Enc 3D, Dataset506, 800 epochov:
+
+- nnUNet_results/Dataset506_ImageCASPreprocessed700Patch80/nnUNetTrainerUMambaEnc_800epochs__nnUNetPlans__3d_fullres/fold_0/checkpoint_best.pth
+- nnUNet_results/Dataset506_ImageCASPreprocessed700Patch80/nnUNetTrainerUMambaEnc_800epochs__nnUNetPlans__3d_fullres/fold_0/checkpoint_final.pth
+
+nnU-Net baseline, Dataset506, 800 epochov:
+
+- nnUNet_results/Dataset506_ImageCASPreprocessed700Patch80/nnUNetTrainer_800epochs__nnUNetPlans__3d_fullres/fold_0/checkpoint_best.pth
+- nnUNet_results/Dataset506_ImageCASPreprocessed700Patch80/nnUNetTrainer_800epochs__nnUNetPlans__3d_fullres/fold_0/checkpoint_final.pth
+
+## Trenutno stanje
+
+Trenutno je narejena glavna Split-1 primerjava med U-Mamba Enc 3D in osnovnim nnU-Net baseline modelom na istem 650/50 train-validation splitu. Oba modela sta bila naučena z enakim patch size [80, 128, 128], batch size 1 in 800 epochi.
+
+Glavni rezultat:
+
+- U-Mamba Enc 3D: Mean Dice 0.6536
+- nnU-Net baseline: Mean Dice 0.7402
+
+V trenutni konfiguraciji je bil nnU-Net baseline boljši in stabilnejši od U-Mamba modela. Analiza FP/FN kaže, da U-Mamba pogosteje oversegmentira in ustvarja dodatne false-positive komponente.
+
+Naslednji predvideni koraki:
+
+- dodati kvalitativne Slicer prikaze najboljših in najslabših primerov,
+- testirati postprocessing z odstranjevanjem majhnih povezanih komponent,
+- dodati topološko/centerline vrednotenje,
+- razširiti skripte/navodila za učenje in vrednotenje na vseh 4 foldih.
