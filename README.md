@@ -355,3 +355,72 @@ Primerjava topoloških metrik:
 Topološke metrike potrjujejo rezultat Dice metrike. Na istem validacijskem splitu je nnU-Net baseline dosegel višji clDice, nižji Betti0 error in nižji VOI. To pomeni, da je bil v trenutni konfiguraciji nnU-Net boljši tako po prekrivanju kot tudi po ohranjanju povezanosti žilnih struktur.
 
 Opomba: clDice je v tej fazi izračunan z reproducibilno skeletno aproksimacijo v skripti evaluate_topology.py. Betti0 error predstavlja razliko v številu povezanih komponent. Za končno verzijo bi bilo smiselno dodatno preveriti centerline metrike z namensko metodo za ekstrakcijo žilnih centerline struktur.
+
+## Kako zagnati projekt
+
+Docker image:
+
+    docker build -t matejt_ams_izziv .
+
+Preverjanje CLI skript:
+
+    python3 run_train.py --help
+    python3 run_test.py --help
+    python3 run_inference.py --help
+
+Preverjanje GPU in diska:
+
+    df -h .
+    nvidia-smi
+
+U-Mamba trening je bil zagnan na Dataset506 z naslednjo konfiguracijo:
+
+- dataset: Dataset506_ImageCASPreprocessed700Patch80
+- split: 650 training / 50 validation
+- validation primeri: 651-700
+- patch size: [80, 128, 128]
+- batch size: 1
+- epochs: 800
+- konfiguracija: 3d_fullres
+
+Za dolge treninge je priporočena uporaba tmux:
+
+    tmux new -s umamba506_800ep
+
+U-Mamba trening:
+
+    docker run -it --gpus device=1 --shm-size=16g --rm -v "$PWD":/workdir -v /media/FastDataMama/new_nnunet:/media/FastDataMama/new_nnunet:ro matejt_ams_izziv bash -lc "cd /workdir && nnUNetv2_train 506 3d_fullres 0 -tr nnUNetTrainerUMambaEnc_800epochs"
+
+nnU-Net baseline trening:
+
+    docker run -it --gpus device=1 --shm-size=16g --rm -v "$PWD":/workdir -v /media/FastDataMama/new_nnunet:/media/FastDataMama/new_nnunet:ro matejt_ams_izziv bash -lc "cd /workdir && nnUNetv2_train 506 3d_fullres 0 -tr nnUNetTrainer_800epochs"
+
+Odklop iz tmux seje:
+
+    Ctrl+B, nato D
+
+Ponovni priklop:
+
+    tmux attach -t umamba506_800ep
+
+Dice / FP / FN evalvacija:
+
+    python3 scripts/evaluate_predictions.py --pred-dir <prediction_dir> --gt-dir <gt_dir> --out-csv <out.csv> --out-json <out.json>
+
+Topološka evalvacija:
+
+    python3 scripts/evaluate_topology.py --pred-dir <prediction_dir> --gt-dir <gt_dir> --out-csv <out.csv> --out-json <out.json>
+
+Pomembni rezultati se iz outputs/evaluation kopirajo v results/evaluation, ker je outputs mapa ignorirana:
+
+    mkdir -p results/evaluation
+    cp outputs/evaluation/*.csv results/evaluation/
+    cp outputs/evaluation/*.json results/evaluation/
+
+Opomba glede Docker ukaza:
+
+- pravilna interaktivna opcija je -it
+- napačno je --it
+- --gpus device=1 pomeni, da Docker uporablja GPU 1
+- znotraj containerja se dodeljeni GPU običajno vidi kot cuda:0
+
