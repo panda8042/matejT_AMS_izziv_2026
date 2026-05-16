@@ -355,10 +355,3 @@ Primerjava topoloških metrik:
 Topološke metrike potrjujejo rezultat Dice metrike. Na istem validacijskem splitu je nnU-Net baseline dosegel višji clDice, nižji Betti0 error in nižji VOI. To pomeni, da je bil v trenutni konfiguraciji nnU-Net boljši tako po prekrivanju kot tudi po ohranjanju povezanosti žilnih struktur.
 
 Opomba: clDice je v tej fazi izračunan z reproducibilno skeletno aproksimacijo v skripti evaluate_topology.py. Betti0 error predstavlja razliko v številu povezanih komponent. Za končno verzijo bi bilo smiselno dodatno preveriti centerline metrike z namensko metodo za ekstrakcijo žilnih centerline struktur.
-
-## Naslednji predvideni koraki
-
-- kvalitativni Slicer prikazi najboljših in najslabših primerov,
-- postprocessing z odstranjevanjem majhnih povezanih komponent,
-- razširitev na vse 4 folde.
-
