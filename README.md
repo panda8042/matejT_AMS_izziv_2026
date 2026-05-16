@@ -322,13 +322,6 @@ Glavni rezultat:
 
 V trenutni konfiguraciji je bil nnU-Net baseline boljši in stabilnejši od U-Mamba modela. U-Mamba pogosteje oversegmentira in ustvarja dodatne false-positive komponente.
 
-Naslednji predvideni koraki:
-
-- kvalitativni Slicer prikazi najboljših in najslabših primerov,
-- postprocessing z odstranjevanjem majhnih povezanih komponent,
-- topološko oziroma centerline vrednotenje,
-- razširitev na vse 4 folde.
-
 
 ## Topološko vrednotenje
 
@@ -359,6 +352,13 @@ Primerjava topoloških metrik:
 | Dataset506 | U-Mamba Enc 3D | 0.6536 ± 0.0779 | 0.6866 ± 0.0959 | 37.90 ± 12.44 | 0.0186 ± 0.0053 |
 | Dataset506 | nnU-Net baseline | 0.7402 ± 0.0646 | 0.7808 ± 0.0857 | 18.30 ± 7.50 | 0.0139 ± 0.0043 |
 
-Topološke metrike potrjujejo rezultat Dice metrike. Na istem validacijskem splitu je nnU-Net baseline dosegel višji clDice, nižji Betti0 error in nižji VOI. To pomeni, da je bil v trenutni konfiguraciji nnU-Net ne samo boljši po prekrivanju, ampak tudi bolj stabilen pri ohranjanju povezanosti žilnih struktur.
+Topološke metrike potrjujejo rezultat Dice metrike. Na istem validacijskem splitu je nnU-Net baseline dosegel višji clDice, nižji Betti0 error in nižji VOI. To pomeni, da je bil v trenutni konfiguraciji nnU-Net boljši tako po prekrivanju kot tudi po ohranjanju povezanosti žilnih struktur.
 
-Opomba: clDice je v tej fazi izračunan z reproducibilno skeletno aproksimacijo v skripti evaluate_topology.py. Za končno verzijo bi bilo smiselno dodatno preveriti centerline metrike z namensko metodo za ekstrakcijo žilnih centerline struktur.
+Opomba: clDice je v tej fazi izračunan z reproducibilno skeletno aproksimacijo v skripti evaluate_topology.py. Betti0 error predstavlja razliko v številu povezanih komponent. Za končno verzijo bi bilo smiselno dodatno preveriti centerline metrike z namensko metodo za ekstrakcijo žilnih centerline struktur.
+
+## Naslednji predvideni koraki
+
+- kvalitativni Slicer prikazi najboljših in najslabših primerov,
+- postprocessing z odstranjevanjem majhnih povezanih komponent,
+- razširitev na vse 4 folde.
+
