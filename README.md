@@ -329,3 +329,36 @@ Naslednji predvideni koraki:
 - topološko oziroma centerline vrednotenje,
 - razširitev na vse 4 folde.
 
+
+## Topološko vrednotenje
+
+Poleg Dice metrike je bila dodana še topološka evalvacija, ker so koronarne arterije tanke in razvejane strukture, kjer sama prekrivna metrika ni dovolj informativna.
+
+Uporabljene metrike:
+
+- Dice ↑: prekrivanje napovedi z ročno masko,
+- clDice ↑: približna centerline/topološka metrika,
+- Betti0 error ↓: absolutna razlika v številu povezanih komponent med napovedjo in referenco,
+- VOI ↓: variation of information med binarno napovedjo in referenco.
+
+Topološka evalvacija je izvedena s skripto:
+
+- scripts/evaluate_topology.py
+
+Rezultati so shranjeni v:
+
+- results/evaluation/umamba506_800ep_topology.csv
+- results/evaluation/umamba506_800ep_topology_summary.json
+- results/evaluation/nnunet506_800ep_topology.csv
+- results/evaluation/nnunet506_800ep_topology_summary.json
+
+Primerjava topoloških metrik:
+
+| Eksperiment | Model | Dice ↑ | clDice ↑ | Betti0 error ↓ | VOI ↓ |
+|---|---|---:|---:|---:|---:|
+| Dataset506 | U-Mamba Enc 3D | 0.6536 ± 0.0779 | 0.6866 ± 0.0959 | 37.90 ± 12.44 | 0.0186 ± 0.0053 |
+| Dataset506 | nnU-Net baseline | 0.7402 ± 0.0646 | 0.7808 ± 0.0857 | 18.30 ± 7.50 | 0.0139 ± 0.0043 |
+
+Topološke metrike potrjujejo rezultat Dice metrike. Na istem validacijskem splitu je nnU-Net baseline dosegel višji clDice, nižji Betti0 error in nižji VOI. To pomeni, da je bil v trenutni konfiguraciji nnU-Net ne samo boljši po prekrivanju, ampak tudi bolj stabilen pri ohranjanju povezanosti žilnih struktur.
+
+Opomba: clDice je v tej fazi izračunan z reproducibilno skeletno aproksimacijo v skripti evaluate_topology.py. Za končno verzijo bi bilo smiselno dodatno preveriti centerline metrike z namensko metodo za ekstrakcijo žilnih centerline struktur.

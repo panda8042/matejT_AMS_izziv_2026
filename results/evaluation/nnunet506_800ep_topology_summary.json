@@ -1,0 +1,17 @@
+{
+    "pred_dir": "nnUNet_results/Dataset506_ImageCASPreprocessed700Patch80/nnUNetTrainer_800epochs__nnUNetPlans__3d_fullres/fold_0/validation",
+    "gt_dir": "nnUNet_preprocessed/Dataset506_ImageCASPreprocessed700Patch80/gt_segmentations",
+    "n": 50,
+    "mean_dice": 0.7402432907662113,
+    "std_dice": 0.06463883543407627,
+    "mean_cldice": 0.7808303071558796,
+    "std_cldice": 0.08573762247240083,
+    "mean_betti0_error": 18.3,
+    "std_betti0_error": 7.502666192761077,
+    "mean_voi": 0.013859018489313556,
+    "std_voi": 0.00425627591599167,
+    "min_dice": 0.578905230962983,
+    "max_dice": 0.8477907968291065,
+    "best_dice_case": "698",
+    "worst_dice_case": "655"
+}
