@@ -14,6 +14,7 @@ Repozitorij vsebuje:
 - Docker okolje s CUDA, PyTorch in U-Mamba odvisnostmi,
 - skripte za pretvorbo ImageCAS podatkov v nnU-Net format,
 - osnovne CLI skripte za trening, testiranje in inferenco,
+- skripte za kvantitativno in topološko vrednotenje rezultatov,
 - mini dataset workflow za varno preverjanje delovanja pipeline-a na 10 slikah.
 
 Končni trening celotnega modela je predviden na zmogljivejšem računalniku z dovolj prostora in GPU pomnilnika. Na laboratorijskem računalniku se uporablja mini testni pipeline.
@@ -38,43 +39,6 @@ matejT_AMS_izziv_2026/
 ├── nnUNet_preprocessed/
 └── nnUNet_results/
 ```
-
-
-
-## Osebne beležke
-
-git add README.md
-git commit -m "first commit"
-git branch -M main
-git remote add origin https://github.com/panda8042/matejT_AMS_izziv_2026.git
-git push -u origin main
-
-
-## subsection docker
-
-docker build -t matejt_ams_izziv .
-
-docker ps -> preveri aktivne
-docker image ls
-
-docker run --gpus device=0 -it --rm -v "$PWD":/workdir -v /media/FastDataMama/izziv/data:/data matejt_ams_izziv python3 test.py
-
-
-## Smoke test status
-
-Na laboratorijskem računalniku je bil uspešno izveden mini end-to-end test za U-Mamba pipeline:
-
-- Dataset503_ImageCASMini50: 50 train slik + 10 test slik,
-- nnU-Net 3d_fullres preprocessing uspešno izveden,
-- U-Mamba trainer se uspešno zažene,
-- zaradi omejitve VRAM na RTX 2080 Ti je bil za smoke test uporabljen zmanjšan plan:
-  - batch_size = 1,
-  - patch_size = [48, 96, 96],
-- 1 epoch trening se uspešno zaključi,
-- ustvarjena sta checkpoint_final.pth in checkpoint_best.pth,
-- validation prediction .nii.gz datoteke se ustvarijo.
-
-Opomba: po 1 epochu so validation predikcije še prazne oziroma vsebujejo samo background, zato ta test potrjuje delovanje pipeline-a, ne pa kakovosti končnega modela. Za uporaben model je potreben daljši trening na večjem GPU oziroma z ustrezno izbranim planom.
 
 ## Smoke test status
 
@@ -202,36 +166,6 @@ Std Dice:  0.0779
 Min Dice:  0.3918
 Max Dice:  0.7856
 
-
-## Dataset506 nnU-Net baseline 800 epoch patch80 result
-
-Izveden je bil še osnovni nnU-Net baseline na istem splitu kot Dataset506 U-Mamba eksperiment.
-
-Uporabljena konfiguracija:
-
-- dataset: Dataset506_ImageCASPreprocessed700Patch80
-- split: 650 training / 50 validation
-- validation primeri: 651–700
-- model: nnU-Net baseline
-- konfiguracija: 3d_fullres
-- patch size: [80, 128, 128]
-- batch size: 1
-- število epochov: 800
-
-Rezultat:
-
-- Mean Validation Dice: 0.7404
-
-Primerjava glavnih rezultatov:
-
-| Eksperiment | Model | Patch size | Epochs | Train/val | Mean Dice |
-|---|---|---:|---:|---:|---:|
-| Dataset505 | U-Mamba Enc 3D | [64, 128, 128] | 200 | 650/50 | 0.6412 |
-| Dataset506 | U-Mamba Enc 3D | [80, 128, 128] | 800 | 650/50 | 0.6536 |
-| Dataset506 | nnU-Net baseline | [80, 128, 128] | 800 | 650/50 | 0.7404 |
-
-Na istem Dataset506 splitu in z enako patch/epoch konfiguracijo je osnovni nnU-Net dosegel višji Mean Validation Dice kot U-Mamba Enc. To kaže, da v trenutni konfiguraciji U-Mamba ni izboljšala segmentacije glede na nnU-Net baseline.
-
 ## Dataset506 nnU-Net baseline 800 epoch patch80 result
 
 Izveden je bil osnovni nnU-Net baseline na istem splitu kot Dataset506 U-Mamba eksperiment.
@@ -357,6 +291,9 @@ Topološke metrike potrjujejo rezultat Dice metrike. Na istem validacijskem spli
 Opomba: clDice je v tej fazi izračunan z reproducibilno skeletno aproksimacijo v skripti evaluate_topology.py. Betti0 error predstavlja razliko v številu povezanih komponent. Za končno verzijo bi bilo smiselno dodatno preveriti centerline metrike z namensko metodo za ekstrakcijo žilnih centerline struktur.
 
 ## Kako zagnati projekt
+
+Opomba: kratka ukaza za U-Mamba in nnU-Net trening predpostavljata, da sta custom trainer klasi `nnUNetTrainerUMambaEnc_800epochs` in `nnUNetTrainer_800epochs` že dostopni v Docker okolju. V izvedenih eksperimentih sta bili ti klasi dodani med pripravo zagona, da se je spremenilo število epochov na 800.
+
 
 Docker image:
 
