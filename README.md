@@ -416,11 +416,3 @@ Pomembni rezultati se iz outputs/evaluation kopirajo v results/evaluation, ker j
     mkdir -p results/evaluation
     cp outputs/evaluation/*.csv results/evaluation/
     cp outputs/evaluation/*.json results/evaluation/
-
-Opomba glede Docker ukaza:
-
-- pravilna interaktivna opcija je -it
-- napačno je --it
-- --gpus device=1 pomeni, da Docker uporablja GPU 1
-- znotraj containerja se dodeljeni GPU običajno vidi kot cuda:0
-
