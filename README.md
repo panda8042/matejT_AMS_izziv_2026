@@ -30,6 +30,9 @@ matejT_AMS_izziv_2026/
 ├── run_inference.py
 ├── configs/
 │   └── params.json
+├── custom_trainers/
+│   ├── nnUNetTrainerUMambaEnc_more.py
+│   └── nnUNetTrainer_baseline_more.py
 ├── scripts/
 │   ├── convert_imagecas_to_nnunet.py
 │   └── convert_imagecas_mini_to_nnunet.py
@@ -292,7 +295,7 @@ Opomba: clDice je v tej fazi izračunan z reproducibilno skeletno aproksimacijo 
 
 ## Kako zagnati projekt
 
-Opomba: kratka ukaza za U-Mamba in nnU-Net trening predpostavljata, da sta custom trainer klasi `nnUNetTrainerUMambaEnc_800epochs` in `nnUNetTrainer_800epochs` že dostopni v Docker okolju. V izvedenih eksperimentih sta bili ti klasi dodani med pripravo zagona, da se je spremenilo število epochov na 800.
+Opomba: custom trainer klasi `nnUNetTrainerUMambaEnc_800epochs` in `nnUNetTrainer_800epochs` sta vključeni v Docker image preko mape `custom_trainers/`. Namenjeni sta reproducibilnemu zagonu 800-epoch U-Mamba in nnU-Net baseline eksperimentov.
 
 
 Docker image:

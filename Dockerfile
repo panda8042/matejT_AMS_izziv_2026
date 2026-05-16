@@ -69,3 +69,7 @@ ENV nnUNet_results=/workdir/nnUNet_results
 WORKDIR /workdir
 
 CMD ["/bin/bash"]
+
+# Custom nnU-Net trainer classes for reproducible 800 epoch experiments
+COPY custom_trainers/nnUNetTrainerUMambaEnc_more.py /opt/U-Mamba/umamba/nnunetv2/training/nnUNetTrainer/nnUNetTrainerUMambaEnc_more.py
+COPY custom_trainers/nnUNetTrainer_baseline_more.py /opt/U-Mamba/umamba/nnunetv2/training/nnUNetTrainer/nnUNetTrainer_baseline_more.py
