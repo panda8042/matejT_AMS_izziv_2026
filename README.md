@@ -17,7 +17,7 @@ Repozitorij vsebuje:
 - skripte za kvantitativno in topološko vrednotenje rezultatov,
 - mini dataset workflow za varno preverjanje delovanja pipeline-a na 10 slikah.
 
-Končni trening celotnega modela je predviden na zmogljivejšem računalniku z dovolj prostora in GPU pomnilnika. Na laboratorijskem računalniku se uporablja mini testni pipeline.
+Glavni eksperimenti so bili izvedeni na laboratorijskem računalniku z uporabo Docker okolja, U-Mamba modela in nnU-Net baseline primerjave. Mini pipeline je bil uporabljen za začetno preverjanje delovanja.
 
 ## Struktura projekta
 
@@ -48,7 +48,7 @@ Uporabljen je bil mini dataset:
 
 - Dataset503_ImageCASMini50,
 - 50 učnih primerov,
-- 10 testnih primerov,
+- 10 validacijskih primerov,
 - uradni Split-1 iz ImageCAS split datoteke.
 
 Uspešno izvedeni koraki:
